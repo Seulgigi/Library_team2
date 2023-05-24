@@ -2,8 +2,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SeatMa extends JFrame {
+
+    private Map<JButton, CustomButton> seatMap;
 
     public SeatMa() {
         super("Seat Management System");
@@ -15,6 +21,8 @@ public class SeatMa extends JFrame {
         gridLayout.setHgap(50); // 열 사이의 가로 간격 설정
         gridLayout.setVgap(50); // 행 사이의 세로 간격 설정
         setLayout(gridLayout);
+
+        seatMap = new HashMap<>();
 
         // 각 공간에 버튼을 추가한 JPanel 생성하여 Frame에 추가
         for (int i = 1; i < 25; i++) {
@@ -43,20 +51,30 @@ public class SeatMa extends JFrame {
             button.setBackground(Color.WHITE); // 버튼의 배경색 설정
 
             // 시간바로 사용할 커스텀 버튼 생성
-            CustomButton customButton = new CustomButton(i, button);
+            Calendar expirationDate = Calendar.getInstance();
+            expirationDate.add(Calendar.DAY_OF_MONTH, i);
+            CustomButton customButton = new CustomButton(i, button, expirationDate.getTime());
 
             button.add(customButton); // 버튼에 시간바 추가
 
             button.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    if (button.getBackground() != Color.YELLOW) {
+                    if (button.getBackground() != Color.YELLOW && button.getBackground() != Color.RED) {
                         int choice = JOptionPane.showConfirmDialog(button, "좌석을 선택하시겠습니까?", "좌석 선택",
                                 JOptionPane.YES_NO_OPTION);
                         if (choice == JOptionPane.YES_OPTION) {
-                            button.setBackground(Color.YELLOW); // 버튼 색상 변경
-                            customButton.startTimer(); // 시간바 타이머 시작
+                            int selectedTime = Integer
+                                    .parseInt(JOptionPane.showInputDialog(button, "사용 시간을 입력하세요(분):"));
+                            if (selectedTime <= 0) {
+                                JOptionPane.showMessageDialog(button, "올바른 시간을 입력하세요.", "오류",
+                                        JOptionPane.ERROR_MESSAGE);
+                            } else {
+                                button.setBackground(Color.YELLOW); // 버튼 색상 변경
+                                customButton.startTimer(selectedTime); // 시간바 타이머 시작
+                            }
                         }
+
                     } else {
                         int choice = JOptionPane.showConfirmDialog(button, "퇴실하시겠습니까?", "퇴실 확인",
                                 JOptionPane.YES_NO_OPTION);
@@ -68,6 +86,7 @@ public class SeatMa extends JFrame {
                 }
             });
 
+            seatMap.put(button, customButton);
             panel.add(button);
         }
 
@@ -85,10 +104,12 @@ public class SeatMa extends JFrame {
         private Timer timer;
         private int remainingTime;
         private JButton button;
+        private Date expirationDate;
 
-        public CustomButton(int number, JButton button) {
+        public CustomButton(int number, JButton button, Date expirationDate) {
             setLayout(new BorderLayout());
             this.button = button;
+            this.expirationDate = expirationDate;
 
             label = new JLabel("" + number, SwingConstants.CENTER);
             label.setFont(label.getFont().deriveFont(Font.BOLD, 16)); // 레이블의 폰트 설정
@@ -98,34 +119,42 @@ public class SeatMa extends JFrame {
             progressBar.setStringPainted(false); // 바에 텍스트 표시하지 않음
             progressBar.setPreferredSize(new Dimension(getWidth(), 10)); // 바의 크기 설정
             progressBar.setBackground(new Color(0, 0, 0, 0)); // 바의 배경색을 투명으로 설정
-            progressBar.setForeground(Color.RED); // 바의 전경색 설정
             progressBar.setVisible(false); // 타이머를 처음에는 숨김
             add(progressBar, BorderLayout.CENTER);
         }
 
-        public void startTimer() {
-            remainingTime = 5 * 60; // 남은 시간을 5분으로 초기화
-            progressBar.setValue(remainingTime); // 바 초기화
-            progressBar.setVisible(true); // 바 표시
+        public void startTimer(int selectedTime) {
+            remainingTime = selectedTime * 60;
+
+            progressBar.setValue(remainingTime);
+            progressBar.setVisible(true);
 
             timer = new Timer(1000, new ActionListener() {
                 @Override
-                public void actionPerformed(ActionEvent e) {
+                public void actionPerformed(ActionEvent e) { // 시간에 따라 백그라운드색 바꾸기
                     remainingTime--;
 
-                    if (remainingTime <= 0) {
-                        timer.stop(); // 타이머 중지
-                        button.setBackground(Color.WHITE); // 버튼 색상 초기화
-                        progressBar.setVisible(false); // 바 숨김
-                        progressBar.setValue(5 * 60); // 바 초기화
+                    if (remainingTime <= 0) { // 잔여시간이 0이되면 자동으로 퇴실
+                        timer.stop(); // Stop the timer
+                        button.setBackground(Color.WHITE);
+                        progressBar.setVisible(false);
+                        progressBar.setValue(5 * 60);
                         JOptionPane.showMessageDialog(button, "퇴실되었습니다.", "알림", JOptionPane.INFORMATION_MESSAGE);
                     } else {
-                        progressBar.setValue(remainingTime); // 바 업데이트
+                        progressBar.setValue(remainingTime);
+
+                        if (remainingTime <= 30 * 60) { // 30분 이하로 남았을때 노란색으로 바뀜
+                            progressBar.setBackground(Color.RED);
+                            button.setBackground(Color.RED);
+                        } else {
+                            progressBar.setBackground(Color.YELLOW);
+                            button.setBackground(Color.YELLOW);
+                        }
                     }
                 }
             });
 
-            timer.start(); // 타이머 시작
+            timer.start(); // Start the timer
         }
 
         public void stopTimer() {
@@ -137,12 +166,12 @@ public class SeatMa extends JFrame {
         }
     }
 
-    // public static void main(String[] args) {
-    // SwingUtilities.invokeLater(new Runnable() {
-    // @Override
-    // public void run() {
-    // new SeatMa();
-    // }
-    // });
-    // }
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new SeatMa();
+            }
+        });
+    }
 }

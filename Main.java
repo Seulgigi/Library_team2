@@ -6,8 +6,7 @@ import java.awt.event.ActionListener;
 import java.util.Map;
 import java.util.HashMap;
 
-
-public class Main extends JFrame{
+public class Main extends JFrame {
 
     // login 변수 추가
     private JTextField usernameField;
@@ -27,7 +26,6 @@ public class Main extends JFrame{
         setSize(1000, 800);
         setLocationRelativeTo(null);
         setVisible(true);
-
 
         // signup/in 구현
         userMap = new HashMap<>();
@@ -62,6 +60,7 @@ public class Main extends JFrame{
 
                 if (userMap.containsKey(username) && userMap.get(username).equals(password)) {
                     JOptionPane.showMessageDialog(Main.this, "로그인 성공!");
+                    openSeatManagement(); // Open seat management after successful login
                 } else {
                     JOptionPane.showMessageDialog(Main.this, "잘못된 사용자명 또는 비밀번호입니다.");
                 }
@@ -86,24 +85,17 @@ public class Main extends JFrame{
         });
 
         setVisible(true);
-
     }
 
-    
+    private void openSeatManagement() {
+        // Open seat management logic goes here
+        SeatMa seatManagement = new SeatMa();
+        seatManagement.setVisible(true);
+    }
 
     public static void main(String[] args) {
-
         // 메인 클래스 실행
         Main main = new Main();
-
-        // 좌석관리 실행
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new SeatMa();
-            }
-        });
-
-        // 나머지 클래스 실행 자리
+        CustomerManage customermanage = new CustomerManage();
     }
 }
