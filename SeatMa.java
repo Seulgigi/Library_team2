@@ -10,6 +10,7 @@ import java.util.Map;
 public class SeatMa extends JFrame {
 
     private Map<JButton, CustomButton> seatMap;
+    private JButton logoutButton;
 
     public SeatMa() {
         super("Seat Management System");
@@ -28,6 +29,21 @@ public class SeatMa extends JFrame {
         for (int i = 1; i < 25; i++) {
             addSeatButtons((i * 10 - 9), i * 10, 2, 100);
         }
+
+        // 로그아웃 버튼 추가
+        JPanel logoutPanel = new JPanel();
+        logoutPanel.setPreferredSize(new Dimension(150, 50)); // 로그아웃 패널 크기 설정
+
+        logoutButton = new JButton("로그아웃");
+        logoutButton.setPreferredSize(new Dimension(150, 50));
+        logoutButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Logout.logout(); // Logout 클래스의 logout 메서드 호출
+            }
+        });
+        logoutPanel.add(logoutButton);
+        add(logoutPanel);
 
         setVisible(true);
     }
