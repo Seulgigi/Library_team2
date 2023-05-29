@@ -11,6 +11,7 @@ public class SeatMa extends JFrame {
 
     private Map<JButton, CustomButton> seatMap;
     private JButton logoutButton;
+    private JButton selectedButton;
 
     public SeatMa() {
         super("Seat Management System");
@@ -24,6 +25,7 @@ public class SeatMa extends JFrame {
         setLayout(gridLayout);
 
         seatMap = new HashMap<>();
+        selectedButton = null;
 
         // 각 공간에 버튼을 추가한 JPanel 생성하여 Frame에 추가
         for (int i = 1; i < 25; i++) {
@@ -62,7 +64,7 @@ public class SeatMa extends JFrame {
         // 버튼 추가
         for (int i = start; i <= end; i++) {
             JButton button = new JButton("" + i);
-            button.setFont(button.getFont().deriveFont(Font.PLAIN, 16)); // 버튼의 폰트 크기 조절
+            button.setFont(button.getFont().deriveFont(Font.PLAIN, 11)); // 버튼의 폰트 크기 조절
             button.setMargin(new Insets(10, 10, 10, 10)); // 버튼의 여백 조절
             button.setBackground(Color.WHITE); // 버튼의 배경색 설정
 
@@ -76,7 +78,7 @@ public class SeatMa extends JFrame {
             button.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    if (button.getBackground() != Color.YELLOW && button.getBackground() != Color.RED) {
+                    if (selectedButton == null) {
                         int choice = JOptionPane.showConfirmDialog(button, "좌석을 선택하시겠습니까?", "좌석 선택",
                                 JOptionPane.YES_NO_OPTION);
                         if (choice == JOptionPane.YES_OPTION) {
@@ -88,16 +90,20 @@ public class SeatMa extends JFrame {
                             } else {
                                 button.setBackground(Color.YELLOW); // 버튼 색상 변경
                                 customButton.startTimer(selectedTime); // 시간바 타이머 시작
+                                selectedButton = button;
                             }
                         }
-
-                    } else {
+                    } else if (selectedButton == button) {
                         int choice = JOptionPane.showConfirmDialog(button, "퇴실하시겠습니까?", "퇴실 확인",
                                 JOptionPane.YES_NO_OPTION);
                         if (choice == JOptionPane.YES_OPTION) {
                             button.setBackground(Color.WHITE); // 버튼 색상 초기화
                             customButton.stopTimer(); // 시간바 타이머 중지
+                            selectedButton = null;
                         }
+                    } else {
+                        JOptionPane.showMessageDialog(button, "이미 좌석을 선택하셨습니다.", "경고",
+                                JOptionPane.WARNING_MESSAGE);
                     }
                 }
             });
