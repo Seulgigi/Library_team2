@@ -11,9 +11,14 @@ public class SeatMa extends JFrame {
 
     private Map<JButton, CustomButton> seatMap;
     private JButton selectedButton;
+    private JLabel idLabel;
+    private JLabel timeLabel;
+    private String ID;
+    private String selectedSeat;
 
-    public SeatMa() {
+    public SeatMa(String ID) {
         super("Seat Management System");
+        this.ID = ID;
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1800, 1000);
 
@@ -30,7 +35,17 @@ public class SeatMa extends JFrame {
         for (int i = 1; i < 25; i++) {
             addSeatButtons((i * 10 - 9), i * 10, 2, 100);
         }
+        idLabel = new JLabel("ID:  | 좌석: ");
+        timeLabel = new JLabel("사용 시간: ");
 
+        JPanel infoPanel = new JPanel();
+        infoPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        infoPanel.add(idLabel);
+        infoPanel.add(timeLabel);
+
+        add(infoPanel, BorderLayout.NORTH);
+
+        setVisible(true);
         setVisible(true);
     }
 
@@ -75,6 +90,9 @@ public class SeatMa extends JFrame {
                                 button.setBackground(Color.YELLOW); // 버튼 색상 변경
                                 customButton.startTimer(selectedTime); // 시간바 타이머 시작
                                 selectedButton = button;
+                                selectedSeat = button.getText();
+                                idLabel.setText("ID: " + ID + " | 좌석: " + selectedSeat);
+                                timeLabel.setText("사용 시간: " + selectedTime + "분");
                             }
                         }
                     } else if (selectedButton == button) {
@@ -84,6 +102,8 @@ public class SeatMa extends JFrame {
                             button.setBackground(Color.WHITE); // 버튼 색상 초기화
                             customButton.stopTimer(); // 시간바 타이머 중지
                             selectedButton = null;
+                            idLabel.setText("ID: | 좌석: ");
+                            timeLabel.setText("사용 시간: ");
                         }
                     } else {
                         JOptionPane.showMessageDialog(button, "이미 좌석을 선택하셨습니다.", "경고",
@@ -172,12 +192,12 @@ public class SeatMa extends JFrame {
         }
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new SeatMa();
-            }
-        });
-    }
+    // public static void main(String[] args) {
+    // SwingUtilities.invokeLater(new Runnable() {
+    // @Override
+    // public void run() {
+    // new SeatMa();
+    // }
+    // });
+    // }
 }

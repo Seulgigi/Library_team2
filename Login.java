@@ -51,7 +51,7 @@ public class Login extends JFrame {
 
                 if (userMap.containsKey(username) && userMap.get(username).equals(password)) {
                     JOptionPane.showMessageDialog(Login.this, "로그인 성공!");
-                    openSeatManagement(); // Open seat management after successful login
+                    openSeatManagement(username); // Open seat management after successful login
                 } else {
                     JOptionPane.showMessageDialog(Login.this, "잘못된 사용자명 또는 비밀번호입니다.");
                 }
@@ -78,9 +78,9 @@ public class Login extends JFrame {
         setVisible(true);
     }
 
-    private void openSeatManagement() {
+    private void openSeatManagement(String ID) {
         // Open seat management logic goes here
-        SeatMa seatManagement = new SeatMa();
+        SeatMa seatManagement = new SeatMa(ID);
         seatManagement.setVisible(true);
     }
 }
