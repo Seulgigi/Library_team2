@@ -8,9 +8,9 @@ import java.util.HashMap;
 
 public class Main extends JFrame {
 
-    private void openSeatManagement() {
+    private void openSeatManagement(String ID) {
         // Open seat management logic goes here
-        SeatMa seatManagement = new SeatMa();
+        SeatMa seatManagement = new SeatMa(ID);
         seatManagement.setVisible(true);
     }
 
@@ -18,7 +18,7 @@ public class Main extends JFrame {
         // 메인 클래스 실행
         Main main = new Main();
         CustomerManage customermanage = new CustomerManage();
-        
+
         Map<String, String> userMap = new HashMap<>();
         userMap.put("사용자1", "비밀번호1");
         userMap.put("사용자2", "비밀번호2");
