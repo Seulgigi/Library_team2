@@ -8,9 +8,9 @@ import java.util.HashMap;
 
 public class Main extends JFrame {
 
-    private void openSeatManagement(String ID) {
+    private void openSeatManagement() {
         // Open seat management logic goes here
-        SeatMa seatManagement = new SeatMa(ID);
+        SeatMa seatManagement = new SeatMa();
         seatManagement.setVisible(true);
     }
 

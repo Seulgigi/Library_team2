@@ -14,6 +14,7 @@ public class SeatMa extends JFrame {
     private JButton selectedButton;
     private JLabel idLabel;
     private JLabel timeLabel;
+    private JLabel remainingTimeLabel;
     private String ID;
     private String selectedSeat;
 
@@ -38,12 +39,14 @@ public class SeatMa extends JFrame {
         }
         idLabel = new JLabel("ID:  | 좌석: ");
         timeLabel = new JLabel("사용 시간: ");
+        remainingTimeLabel = new JLabel("남은 시간: ");
 
         // ID, 좌석, 사용시간 추가
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
         infoPanel.add(idLabel);
         infoPanel.add(timeLabel);
+        infoPanel.add(remainingTimeLabel);
 
         add(infoPanel, BorderLayout.NORTH);
 
@@ -120,6 +123,7 @@ public class SeatMa extends JFrame {
                             selectedButton = null;
                             idLabel.setText("ID: | 좌석: ");
                             timeLabel.setText("사용 시간: ");
+                            remainingTimeLabel.setText("남은 시간: ");
                         }
                     } else {
                         JOptionPane.showMessageDialog(button, "이미 좌석을 선택하셨습니다.", "경고",
@@ -181,6 +185,9 @@ public class SeatMa extends JFrame {
                         button.setBackground(Color.WHITE);
                         progressBar.setVisible(false);
                         progressBar.setValue(5 * 60);
+                        idLabel.setText("ID: | 좌석: ");
+                        timeLabel.setText("사용 시간: ");
+                        remainingTimeLabel.setText("남은 시간: ");
                         JOptionPane.showMessageDialog(button, "퇴실되었습니다.", "알림", JOptionPane.INFORMATION_MESSAGE);
                     } else {
                         progressBar.setValue(remainingTime);
@@ -193,6 +200,10 @@ public class SeatMa extends JFrame {
                             button.setBackground(Color.YELLOW);
                         }
                     }
+                    int minutes = remainingTime / 60;
+                    int seconds = remainingTime % 60;
+                    String remainingTimeString = String.format("%02d:%02d", minutes, seconds);
+                    remainingTimeLabel.setText("남은 시간: " + remainingTimeString);
                 }
             });
 
@@ -205,6 +216,7 @@ public class SeatMa extends JFrame {
             }
             progressBar.setVisible(false); // 바 숨김
             progressBar.setValue(5 * 60); // 바 초기화
+            remainingTimeLabel.setText("남은 시간: ");
         }
     }
 
