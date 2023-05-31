@@ -20,8 +20,6 @@ public class Main extends JFrame {
         CustomerManage customermanage = new CustomerManage();
 
         Map<String, String> userMap = new HashMap<>();
-        userMap.put("사용자1", "비밀번호1");
-        userMap.put("사용자2", "비밀번호2");
 
         // 관리자 접근 계정 추가
         String adminUsername = "admin";
