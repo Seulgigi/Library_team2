@@ -50,8 +50,15 @@ public class Login extends JFrame {
                 String password = new String(passwordField.getPassword());
 
                 if (userMap.containsKey(username) && userMap.get(username).equals(password)) {
-                    JOptionPane.showMessageDialog(Login.this, "로그인 성공!");
-                    openSeatManagement(username); // Open seat management after successful login
+                    if (username.equals("admin")) {
+                        JOptionPane.showMessageDialog(Login.this, "관리자 계정 로그인 성공!");
+                        dispose();
+                        openCustomerManage();
+                    } else {
+                        JOptionPane.showMessageDialog(Login.this, "로그인 성공!");
+                        dispose();
+                        openSeatManagement(username); // Open seat management after successful login
+                    }
                 } else {
                     JOptionPane.showMessageDialog(Login.this, "잘못된 사용자명 또는 비밀번호입니다.");
                 }
@@ -76,6 +83,11 @@ public class Login extends JFrame {
         });
 
         setVisible(true);
+    }
+
+    private void openCustomerManage() {
+        CustomerManage customermanage = new CustomerManage();
+        customermanage.setVisible(true);
     }
 
     private void openSeatManagement(String ID) {
