@@ -5,7 +5,7 @@ import java.awt.event.ActionListener;
 import java.util.Map;
 
 public class Login extends JFrame {
-    private JTextField usernameField;
+    private JTextField memberIdField;
     private JPasswordField passwordField;
     private JButton loginButton;
     private JButton registerButton;
@@ -26,16 +26,16 @@ public class Login extends JFrame {
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(3, 2));
 
-        JLabel usernameLabel = new JLabel("사용자명:");
-        usernameField = new JTextField();
+        JLabel memberIdLabel = new JLabel("학번:");
+        memberIdField = new JTextField();
         JLabel passwordLabel = new JLabel("비밀번호:");
         passwordField = new JPasswordField();
 
         loginButton = new JButton("로그인");
         registerButton = new JButton("회원가입");
 
-        panel.add(usernameLabel);
-        panel.add(usernameField);
+        panel.add(memberIdLabel);
+        panel.add(memberIdField);
         panel.add(passwordLabel);
         panel.add(passwordField);
         panel.add(loginButton);
@@ -46,18 +46,18 @@ public class Login extends JFrame {
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String username = usernameField.getText();
+                String memberId = memberIdField.getText();
                 String password = new String(passwordField.getPassword());
 
-                if (userMap.containsKey(username) && userMap.get(username).equals(password)) {
-                    if (username.equals("admin")) {
+                if (userMap.containsKey(memberId) && userMap.get(memberId).equals(password)) {
+                    if (memberId.equals("admin")) {
                         JOptionPane.showMessageDialog(Login.this, "관리자 계정 로그인 성공!");
                         dispose();
                         openCustomerManage();
                     } else {
                         JOptionPane.showMessageDialog(Login.this, "로그인 성공!");
                         dispose();
-                        openSeatManagement(username); // Open seat management after successful login
+                        openSeatManagement(memberId); // Open seat management after successful login
                     }
                 } else {
                     JOptionPane.showMessageDialog(Login.this, "잘못된 사용자명 또는 비밀번호입니다.");
@@ -68,15 +68,15 @@ public class Login extends JFrame {
         registerButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String username = usernameField.getText();
+                String memberId = memberIdField.getText();
                 String password = new String(passwordField.getPassword());
 
-                if (username.isEmpty() || password.isEmpty()) {
+                if (memberId.isEmpty() || password.isEmpty()) {
                     JOptionPane.showMessageDialog(Login.this, "사용자명과 비밀번호를 모두 입력해주세요.");
-                } else if (userMap.containsKey(username)) {
+                } else if (userMap.containsKey(memberId)) {
                     JOptionPane.showMessageDialog(Login.this, "이미 존재하는 사용자명입니다.");
                 } else {
-                    userMap.put(username, password);
+                    userMap.put(memberId, password);
                     JOptionPane.showMessageDialog(Login.this, "회원가입이 완료되었습니다.");
                 }
             }
