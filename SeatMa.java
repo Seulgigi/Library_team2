@@ -66,6 +66,10 @@ public class SeatMa extends JFrame {
         add(logoutPanel);
 
         setVisible(true);
+
+    }
+
+    public SeatMa() {
     }
 
     // 범위에 해당하는 버튼을 추가하는 메소드
@@ -141,6 +145,7 @@ public class SeatMa extends JFrame {
         panel.setPreferredSize(panelSize);
 
         add(panel);
+
     }
 
     // 커스텀 버튼 클래스
@@ -192,7 +197,7 @@ public class SeatMa extends JFrame {
                     } else {
                         progressBar.setValue(remainingTime);
 
-                        if (remainingTime <= 30 * 60) { // 30분 이하로 남았을때 노란색으로 바뀜
+                        if (remainingTime <= 30 * 60) { // 30분 이하로 남았을때 빨간색으로 바뀜
                             progressBar.setBackground(Color.RED);
                             button.setBackground(Color.RED);
                         } else {

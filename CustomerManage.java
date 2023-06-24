@@ -1,9 +1,9 @@
 import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -15,66 +15,26 @@ public class CustomerManage extends JFrame {
     private JTable table;
     private JTextField memberIdField;
     private JTextField seatNumberField;
-    private JTextField nameField;
-    private JTextField phoneNumberField;
     private JTextField registrationTimeField;
-    private JTextField expirationTimeField;
 
     public CustomerManage() {
         setTitle("Customer Management");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800, 600);
+        setSize(800, 400);
 
         // 테이블 모델 생성
         tableModel = new DefaultTableModel();
         tableModel.addColumn("학번");
         tableModel.addColumn("좌석번호");
-        tableModel.addColumn("이름");
-        tableModel.addColumn("전화번호");
         tableModel.addColumn("등록시간");
-        tableModel.addColumn("만료시간");
 
         // 테이블 생성
         table = new JTable(tableModel);
 
-        // 테이블 셀 렌더러 설정
-        DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer() {
-            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-                    boolean hasFocus, int row, int column) {
-                Component component = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row,
-                        column);
-
-                String expirationTime = (String) tableModel.getValueAt(row, 5);
-
-                if (expirationTime != null) {
-                    long currentTime = System.currentTimeMillis();
-                    long expiration = parseTime(expirationTime);
-
-                    if (expiration - currentTime <= 10 * 60 * 1000) { // 10분 = 10 * 60 * 1000 밀리초
-                        component.setBackground(Color.RED);
-                    } else {
-                        component.setBackground(table.getBackground());
-                    }
-                } else {
-                    component.setBackground(table.getBackground());
-                }
-
-                return component;
-            }
-        };
-
-        // 테이블 셀 렌더러 적용
-        for (int i = 0; i < tableModel.getColumnCount(); i++) {
-            table.getColumnModel().getColumn(i).setCellRenderer(cellRenderer);
-        }
-
         // 입력 필드 생성
         memberIdField = new JTextField(10);
         seatNumberField = new JTextField(10);
-        nameField = new JTextField(10);
-        phoneNumberField = new JTextField(10);
         registrationTimeField = new JTextField(10);
-        expirationTimeField = new JTextField(10);
 
         // 버튼 생성
         JButton addButton = new JButton("Add");
@@ -82,28 +42,19 @@ public class CustomerManage extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String memberId = memberIdField.getText();
                 String seatNumber = seatNumberField.getText();
-                String name = nameField.getText();
-                String phoneNumber = phoneNumberField.getText();
 
                 // 현재 시간을 등록시간으로 설정
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 String registrationTime = sdf.format(new Date());
 
-                // 등록시간에 4시간 추가하여 만료시간 계산
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTime(new Date(parseTime(registrationTime)));
-                calendar.add(Calendar.HOUR_OF_DAY, 4);
-                String expirationTime = sdf.format(calendar.getTime());
-
                 Vector<String> row = new Vector<String>();
                 row.add(memberId);
                 row.add(seatNumber);
-                row.add(name);
-                row.add(phoneNumber);
                 row.add(registrationTime);
-                row.add(expirationTime);
 
                 tableModel.addRow(row);
+
+                saveDataToFile(); // 데이터 파일에 저장
 
                 clearFields();
             }
@@ -130,17 +81,8 @@ public class CustomerManage extends JFrame {
                         case 1: // 좌석번호
                             updatedValue = seatNumberField.getText();
                             break;
-                        case 2: // 이름
-                            updatedValue = nameField.getText();
-                            break;
-                        case 3: // 전화번호
-                            updatedValue = phoneNumberField.getText();
-                            break;
-                        case 4: // 등록시간
+                        case 2: // 등록시간
                             updatedValue = registrationTimeField.getText();
-                            break;
-                        case 5: // 만료시간
-                            updatedValue = expirationTimeField.getText();
                             break;
                         default:
                             break;
@@ -148,6 +90,8 @@ public class CustomerManage extends JFrame {
 
                     // 업데이트된 값으로 선택된 셀을 수정합니다.
                     tableModel.setValueAt(updatedValue, selectedRow, selectedColumn);
+
+                    saveDataToFile(); // 데이터 파일에 저장
 
                     clearFields();
                 }
@@ -160,6 +104,7 @@ public class CustomerManage extends JFrame {
                 int selectedRow = table.getSelectedRow();
                 if (selectedRow >= 0) {
                     tableModel.removeRow(selectedRow);
+                    saveDataToFile(); // 데이터 파일에 저장
                 }
             }
         });
@@ -183,10 +128,6 @@ public class CustomerManage extends JFrame {
                             if (cellValue != null && cellValue.equalsIgnoreCase(searchValue)) {
                                 // 해당 셀 선택
                                 table.changeSelection(row, column, false, false);
-                                // 선택한 셀의 배경색 변경
-                                table.getCellRenderer(row, column)
-                                        .getTableCellRendererComponent(table, null, false, false, row, column)
-                                        .setBackground(Color.BLUE);
                                 found = true;
                             }
                         }
@@ -210,10 +151,6 @@ public class CustomerManage extends JFrame {
         inputPanel.add(memberIdField);
         inputPanel.add(new JLabel("좌석번호:"));
         inputPanel.add(seatNumberField);
-        inputPanel.add(new JLabel("이름:"));
-        inputPanel.add(nameField);
-        inputPanel.add(new JLabel("전화번호:"));
-        inputPanel.add(phoneNumberField);
         inputPanel.add(addButton);
         inputPanel.add(updateButton);
         inputPanel.add(deleteButton);
@@ -221,15 +158,15 @@ public class CustomerManage extends JFrame {
 
         panel.add(inputPanel, BorderLayout.SOUTH);
         setContentPane(panel);
+
+        // 데이터 로드
+        loadDataFromFile();
     }
 
     private void clearFields() {
         memberIdField.setText("");
         seatNumberField.setText("");
-        nameField.setText("");
-        phoneNumberField.setText("");
         registrationTimeField.setText("");
-        expirationTimeField.setText("");
     }
 
     private long parseTime(String timeString) {
@@ -241,6 +178,54 @@ public class CustomerManage extends JFrame {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    private void saveDataToFile() {
+        try {
+            FileWriter writer = new FileWriter("data.txt");
+            BufferedWriter bufferWriter = new BufferedWriter(writer);
+
+            int rowCount = tableModel.getRowCount();
+            int columnCount = tableModel.getColumnCount();
+
+            for (int row = 0; row < rowCount; row++) {
+                for (int column = 0; column < columnCount; column++) {
+                    String cellValue = (String) tableModel.getValueAt(row, column);
+                    bufferWriter.write(cellValue);
+                    bufferWriter.write(",");
+                }
+                bufferWriter.newLine();
+            }
+
+            bufferWriter.close();
+            writer.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void loadDataFromFile() {
+        try {
+            FileReader reader = new FileReader("data.txt");
+            BufferedReader bufferedReader = new BufferedReader(reader);
+
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                String[] data = line.split(",");
+                if (data.length == 3) {
+                    Vector<String> row = new Vector<String>();
+                    row.add(data[0]);
+                    row.add(data[1]);
+                    row.add(data[2]);
+                    tableModel.addRow(row);
+                }
+            }
+
+            bufferedReader.close();
+            reader.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
     public static void main(String[] args) {
