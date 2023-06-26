@@ -1,27 +1,33 @@
 import javax.swing.JFrame;
+import javax.swing.*;
 import java.awt.*;
-// import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Map;
+import java.util.HashMap;
 
-public class Main extends JFrame{
-    // 클래스 선언 자리
+public class Main extends JFrame {
 
-    // 기본 프레임
-    public Main() {
-        setTitle("도서관 좌석 관리 시스템");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		Container c = getContentPane();
-		c.setLayout(new FlowLayout());
-
-        setSize(1000,800);
-        setLocationRelativeTo(null);
-		setVisible(true);
+    private void openSeatManagement(String ID) {
+        // Open seat management logic goes here
+        SeatMa seatManagement = new SeatMa(ID);
+        seatManagement.setVisible(true);
     }
 
     public static void main(String[] args) {
-
         // 메인 클래스 실행
         Main main = new Main();
+        CustomerManage customermanage = new CustomerManage();
 
-        // 나머지 클래스 실행 자리
+        Map<String, String> userMap = new HashMap<>();
+        userMap.put("사용자1", "비밀번호1");
+        userMap.put("사용자2", "비밀번호2");
+
+        // 관리자 접근 계정 추가
+        String adminUsername = "admin";
+        String adminPassword = "adminPassword";
+        userMap.put(adminUsername, adminPassword);
+
+        Login login = new Login(userMap);
     }
 }
